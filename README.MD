@@ -1,8 +1,8 @@
-**the original project report is available in the file [rapport.pdf](report.pdf)**
+**the original project report is available in the file [rapport.pdf](./rapport.pdf)**
 # Tun Tap tunneling 
 ## Project Goal
 The objective of this project was to create a tunnel allowing the transmission of IPv6 packets over an IPv4 network.
-## Technologies Used
+## Used Technologies 
 - **python** 
 - **linux tun/tap**
 - **vagrant** 

@@ -1,0 +1,9 @@
+# fichier de configuration utiliser afin de lancer un client distant , voir commentaires.
+# le nom de l'interface tun, doit coresponde aufichier de configuradion.
+tun=tun0
+# serveur ou client, definir si l'application doit etre un serveur ou client .
+actas=client
+# adresse du serveur (adresse de la vid)
+serverip=10.192.136.208
+# numero de port du serveur (le numer du port de la vid utiliser pour le port forwarding)
+serverport=8080

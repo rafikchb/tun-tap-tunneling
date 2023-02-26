@@ -1,0 +1,19 @@
+# pour lancer la configuration ansible:
+sudo ansible-playbook -c local -v /vagrant/config.yml
+
+# pour lancer rapidemnet le client :
+cd /mnt/partage/src/ && sudo ./tunnel64d configClient.txt
+cd /mnt/partage/src/ && sudo ./tunnel64d configClientDistant.txt
+
+# pour lnacer rapidement le serveur :
+cd /mnt/partage/src/ && sudo ./tunnel64d configServer.txt
+cd /mnt/partage/src/ && sudo ./tunnel64d configServerDistant.txt
+
+# destruction est lancement des vm
+ vagrant destroy -f && vagrant up
+
+# afin de recharger le nouvelle configuration ansible 
+vagrant reload 
+
+# afin de lancer 
+bash /vagrant/config.sh

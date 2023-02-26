@@ -1,0 +1,10 @@
+# fichier de configuration utiliser afin de lancer un serveur local, voir commentaires.
+# le nom de l'interface tun, doit coresponde aufichier de configuradion.
+tun=tun0
+# serveur ou client, definir si l'application doit etre un serveur ou client .
+actas=server
+# adresse du serveur
+# pour fonctioner en doit metre 
+serverip=172.16.2.163
+# numero de port du serveur 
+serverport=123

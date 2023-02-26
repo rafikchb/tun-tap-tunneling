@@ -1,0 +1,42 @@
+#!/usr/bin/env python3
+# ce fichier n'a pas d'extenssion python cars il a ete rendu executable 
+# afin de l'executer utiliser : ./tunnel64d
+# ce programe a besoin d'un fichier de configration qui doit etre passée en parametre
+
+import iftun
+import extremite
+import sys
+import os
+
+
+
+envVar = {}
+if len( sys.argv) == 1 :
+    print("aucun fichier de configuration passer en parametre") 
+    print("utilisation des prametre par default") 
+    envVar = {"tun":"tun0","actas":"client","serverip":"127.0.0.1","serverport": "123" } 
+else :
+    try :
+        f = open(sys.argv[1],"r")
+        for line in f:
+            if line.startswith('#') or not line.strip():
+                continue
+            line = line.lower()
+            key, value = line.strip().split('=', 1)
+            key = key.strip()
+            value = value.strip()
+            try : 
+                envVar[key] = int(value); 
+            except : 
+                envVar[key] = value;
+        f.close()
+    except :
+        print(f"le fichier : {sys.argv[1]} ,est introuvable ")
+        exit()
+print(envVar)
+tunFd= iftun.tunalloc(envVar["tun"])
+os.system("bash /vagrant/configure-tun.sh")
+if envVar["actas"]=="server": 
+    extremite.extOut(envVar["serverip"] ,envVar["serverport"] , tunFd)
+if envVar["actas"]=="client" :
+    extremite.extIn(envVar["serverip"] ,envVar["serverport"] , tunFd)

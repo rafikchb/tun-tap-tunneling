@@ -1,0 +1,121 @@
+# fichier utiliser afin de configurer les machines aprer ajout des améliorations
+
+- hosts: localhost
+  remote_user: root
+  tasks:
+
+# suppression de la connexion nommer "wired connexion 1"
+  - name: Suppression de la connexion nommer "wired connexion 1"
+    shell: nmcli connection del "Wired connection 1"
+    ignore_errors: true
+
+# suppression de la connexion nommer "wired connexion 1"
+  - name: Suppression de la connexion nommer "wired connexion 2"
+    shell: nmcli connection del "Wired connection 2"
+    ignore_errors: true
+
+  # - name: Suppression de la passerelle par défaut
+  #   shell: ip route del default || true
+  #   ignore_errors: true
+
+  - name: Configuration de VM1/eth1
+    nmcli:
+      type: ethernet
+      conn_name: eth1 via ansible
+      ifname: eth1
+      state: present
+      autoconnect: true
+      ip4: 172.16.2.131/28
+      method6: disabled
+
+  - name: Configuration de VM1/eth2
+    community.general.nmcli:	
+      type: ethernet
+      conn_name: eth2 via ansible
+      ifname: eth2
+      state: present
+      ip6: fc00:1234:3::1/64
+      method4: disabled
+
+  - name: Configuration de la route vers LAN2 via VM2
+    community.general.nmcli:
+      type: ethernet
+      conn_name: eth1 via ansible
+      ifname: eth1
+      routes4: 172.16.2.160/28  172.16.2.132 
+      state: present
+
+  - name: Activation du routage IPv6
+    sysctl:
+      name: net.ipv6.conf.all.forwarding
+      value: '1'
+      sysctl_set: yes
+
+# pour faire l'amelioration d'utilisation d'ansible .
+  - name: Creation de tun0 
+    shell: ip tuntap add mode tun dev tun0
+    ignore_errors: true
+    
+  - name: configuration de tun0 
+    shell: ip -6 addr add fc00:1234:ffff::1/64 dev tun0
+    ignore_errors: true
+
+  - name : Activation de tun0
+    shell: ip link set up dev tun0
+
+
+  - name : configuration d'un passrelle par default
+    shell: ip -6 route add fc00:1234:4::/64 via fc00:1234:ffff::2
+    ignore_errors: true
+
+# //////////////////////////////////////////////////
+
+  
+# pour faire l'melioration d'utilisation de radvd.
+  - name: Configuration automatique de ``VM1-6``/eth1
+    nmcli:
+      type: ethernet
+      conn_name: eth1 via ansible
+      ifname: eth1
+      state: present
+      autoconnect: true
+      method6: auto
+  - name: fichier de configuration radvd.conf
+    copy: 
+      src: /vagrant/radvd.conf
+      dest: /etc/radvd.conf
+      owner: root
+      group: root
+      mode: '0644'
+  - name: Installer radvd
+    package:
+      name: radvd
+      state: present
+
+  - name: Démarrer le service radvd
+    service:
+      name: radvd
+      state: started
+# //////////////////////////////////////////////////
+
+  - name: Activation explicite de cette configuration eth1
+    shell: nmcli con up "eth1 via ansible"
+
+  - name: Activation explicite de cette configuration eth2
+    shell: nmcli con up "eth2 via ansible"
+
+# /////// pour faire l'amelioration d'utilisation d'ansible (lancement du client comme etant un service )
+  - name: coppy du servie dans le repertoire system 
+    copy: 
+      src: /vagrant/service/tunnel64d.service
+      dest: /etc/systemd/system/tunnel64d.service
+      owner: root
+      group: root
+      mode: '0644'
+
+  - name: reload du daemon
+    shell: sudo systemctl daemon-reload
+  - name: enabling the service
+    shell: sudo systemctl enable tunnel64d.service
+  - name: starting the service 
+    shell: sudo systemctl start tunnel64d.service

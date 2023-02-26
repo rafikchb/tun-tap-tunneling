@@ -1,0 +1,9 @@
+# fichier de configuration utiliser afin de lancer un serveur distant , voir commentaires.
+# le nom de l'interface tun, doit coresponde aufichier de configuradion.
+tun=tun0
+# serveur ou client, definir si l'application doit etre un serveur ou client .
+actas=server
+# adresse du serveur(adress de eth0)
+serverip=10.0.2.15
+# numero de port du serveur (port de la vm qui a etet utiliser pour le port forwarding)
+serverport=123

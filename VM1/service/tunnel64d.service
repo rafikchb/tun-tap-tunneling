@@ -1,0 +1,12 @@
+[Unit]
+Description=tunnel64d service
+After=multi-user.target
+
+[Service]
+Type=simple
+Restart=always
+NonBlocking=true
+ExecStart=/mnt/partage/src/tunnel64d configClient.txt
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,38 @@
+- hosts: localhost
+  remote_user: root
+  tasks:
+
+  # Suppression de la connexion "wired connexion 1"
+  - name: Suppression de la connexion nommer "wired connexion 1"
+    shell: nmcli connection del "Wired connection 1"
+    ignore_errors: true
+
+
+# Configurations Réseaux
+  - name: Suppression de la passerelle par défaut
+    shell: ip route del default
+    ignore_errors: true
+
+  - name: Configuration de VM3-6/eth1
+    nmcli:
+      type: ethernet
+      conn_name: eth1 via ansible
+      ifname: eth1
+      state: present
+      autoconnect: true
+      ip6: fc00:1234:4::36/64
+      method4 : disabled
+
+  - name: Configuration de la route vers tout via VM3
+    community.general.nmcli:
+      type: ethernet
+      conn_name: eth1 via ansible
+      ifname: eth1
+      routes6: ::/0 fc00:1234:4::3 
+      state: present
+
+  - name: Activation explicite de cette configuration eth1
+    shell: nmcli con up "eth1 via ansible"
+
+
+      

@@ -1,0 +1,52 @@
+- hosts: localhost
+  remote_user: root
+  tasks:
+
+# Suppression de la connexion "wired connexion 1"
+  - name: Suppression de la connexion nommer "wired connexion 1"
+    shell: nmcli connection del "Wired connection 1"
+    ignore_errors: true
+
+# Suppression de la connexion "wired connexion 2"
+  - name: Suppression de la connexion nommer "wired connexion 2"
+    shell: nmcli connection del "Wired connection 2"
+    ignore_errors: true
+
+# Suppression de la passerelle par défaut
+  - name: Suppression de la passerelle par défaut
+    shell: ip route del default || true
+    ignore_errors: true
+
+# Configuration des interfaces eth1 et eth2
+
+  - name: Configuration de VM2/eth1
+    nmcli:
+      type: ethernet
+      conn_name: eth1 via ansible
+      ifname: eth1
+      state: present
+      autoconnect: true
+      ip4: 172.16.2.132/28
+
+
+  - name: Configuration de VM2/eth2
+    nmcli:
+      type: ethernet
+      conn_name: eth2 via ansible
+      ifname: eth2
+      state: present
+      autoconnect: true
+      ip4: 172.16.2.162/28
+
+
+# Routage IPv4
+  - name: Activation du routage IPv4
+    sysctl:
+      name: net.ipv4.ip_forward
+      value: '1'
+      sysctl_set: yes
+
+  - name: Activation explicite de cette configuration eth1
+    shell: nmcli con up "eth1 via ansible"
+  - name: Activation explicite de cette configuration eth2
+    shell: nmcli con up "eth2 via ansible"
